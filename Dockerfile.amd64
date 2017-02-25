@@ -1,0 +1,57 @@
+FROM debian:jessie
+
+MAINTAINER Joel De Jesus "dejesus.joel@e-flamingo.net"
+
+ENV DEBIAN_FRONTEND noninteractive
+
+ARG proxy
+
+RUN if [ -z ${proxy+x} ]; then echo "Going without apt proxy" 1>&2; else echo "Acquire::http::Proxy \"http://$proxy\";" > /etc/apt/apt.conf.d/proxy.conf && echo "Going with apt proxy" 1>&2 ; fi 
+
+RUN apt-get update && apt-get install -y git-buildpackage
+
+RUN  useradd -ms /bin/bash builder && \
+  echo "builder ALL=(ALL)       NOPASSWD: ALL" >> /etc/sudoers
+
+
+
+USER builder
+
+# download dependencies
+RUN cd $HOME && git clone https://github.com/favioflamingo/libcrypt-openssl-aes-perl && \
+  cd libcrypt-openssl-aes-perl && git checkout -b upstream origin/upstream && git checkout master && \
+  cd $HOME && git clone https://github.com/favioflamingo/libnet-dns-perl && \
+  cd libnet-dns-perl && git checkout -b upstream origin/upstream && git checkout master && \
+  cd $HOME && git clone https://github.com/favioflamingo/picocoin && \
+  cd picocoin && git checkout -b stable-0.1 origin/stable-0.1 && git checkout -b upstream-0.1 origin/upstream-0.1 && \
+  cd $HOME && git clone https://github.com/favioflamingo/libcbitcoin-perl && \
+  cd libcbitcoin-perl && git checkout -b stable origin/stable && git checkout -b upstream origin/upstream
+
+RUN sudo apt-get install -y autotools-dev
+
+RUN sudo apt-get install -y libssl-dev && cd $HOME/libcrypt-openssl-aes-perl && \
+ ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream \
+ --git-debian-branch=master --git-force-create --git-upstream-tree=branch || echo "no gpg?" 1>&2 ) && \
+ cd .. && sudo dpkg -i *.deb
+
+RUN sudo apt-get install -y libssl-dev && cd $HOME/libnet-dns-perl && \
+ ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream \
+ --git-debian-branch=master --git-force-create --git-upstream-tree=branch || echo "no gpg?" 1>&2 ) && \
+ cd .. && sudo dpkg -i *.deb
+
+
+
+RUN cd $HOME/picocoin && git checkout stable-0.1 && \
+ sudo apt-get install -y libcrypto++-dev libevent-dev libjansson-dev valgrind dh-autoreconf libgmp-dev && \
+ ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream-0.1 \
+ --git-debian-branch=stable-0.1 --git-force-create --git-upstream-tree=branch || echo "no gpg, no worries" 1>&2 ) && \
+ cd .. && sudo dpkg -i *.deb
+
+
+RUN cd $HOME/libcbitcoin-perl && git checkout stable && \
+ sudo apt-get install -y libfile-slurp-perl libcrypt-cbc-perl libberkeleydb-perl libio-socket-socks-perl \
+   liblog-log4perl-perl libmath-bigint-gmp-perl libconvert-base32-perl libio-epoll-perl libev-perl && \
+ ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream \
+ --git-debian-branch=stable --git-force-create --git-upstream-tree=branch || echo "no gpg, no worries" 1>&2 ) && \
+ cd .. && sudo dpkg -i libcbitcoin*.deb
+
