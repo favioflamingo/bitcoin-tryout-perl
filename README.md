@@ -5,10 +5,19 @@
 新しいコンテナーの名前は「yapc-osaka:2017」となります。
 
 ```
-docker build https://raw.githubusercontent.com/favioflamingo/bitcoin-tryout-perl/master/Dockerfile.amd64#yapc-osaka:2017
+docker -t yapc-osaka:2017 build https://raw.githubusercontent.com/favioflamingo/bitcoin-tryout-perl/master/Dockerfile.amd64
 ```
 
 Perlのビットコインのライブラリの詳細は[このページ](https://github.com/favioflamingo/libcbitcoin-perl)をご覧ください。
+
+
+コンテナーを作るときに下記のコマンドを使います。
+
+```
+docker run --rm=true -v $(pwd):/tmp/code --name yapc-osaka.run -it yapc-osaka:2017 /bin/bash
+```
+
+コンテナーのなかで自分が作ったコードが/tmp/codeに入っているはずです。
 
 
 ## リンク
