@@ -20,6 +20,8 @@ USER builder
 # download dependencies
 RUN cd $HOME && git clone https://github.com/favioflamingo/libcrypt-openssl-aes-perl && \
   cd libcrypt-openssl-aes-perl && git checkout -b upstream origin/upstream && git checkout master && \
+  cd $HOME && git clone https://github.com/favioflamingo/libkgc-mq-perl && \
+  cd libkgc-mq-perl && git checkout -b upstream origin/upstream && git checkout master && \
   cd $HOME && git clone https://github.com/favioflamingo/libnet-dns-perl && \
   cd libnet-dns-perl && git checkout -b upstream origin/upstream && git checkout master && \
   cd $HOME && git clone https://github.com/favioflamingo/picocoin && \
@@ -35,6 +37,11 @@ RUN sudo apt-get install -y libssl-dev && cd $HOME/libcrypt-openssl-aes-perl && 
  cd .. && sudo dpkg -i *.deb
 
 RUN sudo apt-get install -y libssl-dev && cd $HOME/libnet-dns-perl && \
+ ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream \
+ --git-debian-branch=master --git-force-create --git-upstream-tree=branch || echo "no gpg?" 1>&2 ) && \
+ cd .. && sudo dpkg -i *.deb
+
+RUN cd $HOME/libkgc-mq-perl && \
  ( gbp buildpackage --git-verbose --git-color=on --git-upstream-branch=upstream \
  --git-debian-branch=master --git-force-create --git-upstream-tree=branch || echo "no gpg?" 1>&2 ) && \
  cd .. && sudo dpkg -i *.deb

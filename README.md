@@ -8,7 +8,7 @@
 docker build -t yapc-osaka:2017 https://raw.githubusercontent.com/favioflamingo/bitcoin-tryout-perl/master/Dockerfile.amd64
 ```
 
-Perlのビットコインのライブラリの詳細は[このページ](https://github.com/favioflamingo/libcbitcoin-perl)をご覧ください。
+Perlのビットコインのライブラリの詳細は[このページ](https://github.com/favioflamingo/libcbitcoin-perl)をご覧ください。すべての依存はdeb化されました。
 
 
 コンテナーを作るときに下記のコマンドを使います。
@@ -18,6 +18,8 @@ docker run --rm=true -v $(pwd):/tmp/code --name yapc-osaka.run -it yapc-osaka:20
 ```
 
 コンテナーのなかで自分が作ったコードが/tmp/codeに入っているはずです。
+
+
 
 
 ## リンク
