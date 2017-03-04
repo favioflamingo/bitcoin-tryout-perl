@@ -5,7 +5,7 @@
 新しいコンテナーの名前は「yapc-osaka:2017」となります。
 
 ```
-docker -t yapc-osaka:2017 build https://raw.githubusercontent.com/favioflamingo/bitcoin-tryout-perl/master/Dockerfile.amd64
+docker build -t yapc-osaka:2017 https://raw.githubusercontent.com/favioflamingo/bitcoin-tryout-perl/master/Dockerfile.amd64
 ```
 
 Perlのビットコインのライブラリの詳細は[このページ](https://github.com/favioflamingo/libcbitcoin-perl)をご覧ください。
